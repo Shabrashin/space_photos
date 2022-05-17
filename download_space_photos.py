@@ -3,6 +3,7 @@ import os
 from os.path import splitext
 from datetime import datetime
 from dotenv import load_dotenv
+from urllib.parse import urlsplit
 
 
 def download_img(url, filename):
@@ -17,17 +18,18 @@ def download_img(url, filename):
 
 
 def fetch_spacex_last_launch():
+    launch_number = 100
     url = 'https://api.spacexdata.com/v4/launches'
     response = requests.get(url)
     response.raise_for_status()
-    img_urls = response.json()[100]['links']['flickr']['original']
+    img_urls = response.json()[launch_number]['links']['flickr']['original']
 
-    for i in range(len(img_urls)):
-        download_img(img_urls[i], f'spacex_launch{i}.jpg')
+    for img_url_number, img_url in enumerate(img_urls):
+        download_img(img_url, f'spacex_launch{img_url_number}.jpg')
 
 
 def get_image_extension(url):
-    return splitext(url)[1]
+    return splitext(urlsplit(url).path)[1]
 
 
 def fetch_nasa_pictures_of_the_day(api_key):
@@ -36,9 +38,12 @@ def fetch_nasa_pictures_of_the_day(api_key):
     response.raise_for_status()
 
     pictures_of_the_day = response.json()
-    for i in range(len(pictures_of_the_day)):
-        url_picture_of_the_day = pictures_of_the_day[i]['url']
-        download_img(url_picture_of_the_day, f'nasa_picture_of_the_day{i}{get_image_extension(url_picture_of_the_day)}')
+    for picture_number, picture_of_the_day in enumerate(pictures_of_the_day):
+        url_picture_of_the_day = picture_of_the_day['url']
+        download_img(
+            url_picture_of_the_day,
+            f'nasa_picture_of_the_day{picture_number}{get_image_extension(url_picture_of_the_day)}'
+        )
 
 
 def fetch_nasa_epic(api_key):
@@ -55,7 +60,7 @@ def fetch_nasa_epic(api_key):
 
 if __name__ == '__main__':
     load_dotenv()
-    NASA_API_KEY = os.getenv("NASA_API_KEY")
+    nasa_api_key = os.getenv("NASA_API_KEY")
     fetch_spacex_last_launch()
-    fetch_nasa_pictures_of_the_day(NASA_API_KEY)
-    fetch_nasa_epic(NASA_API_KEY)
+    fetch_nasa_pictures_of_the_day(nasa_api_key)
+    fetch_nasa_epic(nasa_api_key)

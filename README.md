@@ -11,7 +11,7 @@ lgvJjYKzyRw8Tc2vsdAC7TqmuLoK96PhezsadMSdmcl
 ```
 Далее необходимо поменять значение переменной `NASA_API_KEY` в файле `.env`
 ```
-BITLY_TOKEN = "ВАШ_ТОКЕН"
+NASA_API_KEY = "ВАШ_ТОКЕН"
 ```
 
 
