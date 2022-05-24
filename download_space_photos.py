@@ -6,19 +6,18 @@ from dotenv import load_dotenv
 from urllib.parse import urlsplit
 
 
-def download_img(url, filename):
+def download_img(url, filename, params={}):
     os.makedirs('images', exist_ok=True)
     path = f'images/{filename}'
 
-    response = requests.get(url)
+    response = requests.get(url, params=params)
     response.raise_for_status()
 
     with open(path, 'wb') as file:
         file.write(response.content)
 
 
-def fetch_spacex_last_launch():
-    launch_number = 100
+def fetch_spacex_last_launch(launch_number=100):
     url = 'https://api.spacexdata.com/v4/launches'
     response = requests.get(url)
     response.raise_for_status()
@@ -51,11 +50,11 @@ def fetch_nasa_epic(api_key):
     response = requests.get(url, params={'api_key': api_key})
     response.raise_for_status()
 
-    for i in range(5):
-        epic_info = response.json()[i]
+    epic_photos = response.json()[:5]
+    for picture_number, epic_info in enumerate(epic_photos):
         converted_date = datetime.strptime(epic_info['date'], '%Y-%m-%d %H:%M:%S').strftime('%Y/%m/%d')
-        download_url = f'https://api.nasa.gov/EPIC/archive/natural/{converted_date}/png/{epic_info["image"]}.png?api_key={api_key}'
-        download_img(download_url, f'nasa_epic{i}.png')
+        download_url = f'https://api.nasa.gov/EPIC/archive/natural/{converted_date}/png/{epic_info["image"]}.png'
+        download_img(download_url, f'nasa_epic{picture_number}.png', {'api_key': api_key})
 
 
 if __name__ == '__main__':

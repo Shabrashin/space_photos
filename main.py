@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import time
 
 
-async def main():
+def main():
     load_dotenv()
     telegram_token = os.getenv("TELEGRAM_TOKEN")
     telegram_channel_id = os.getenv('TELEGRAM_CHANNEL_ID')
@@ -19,4 +19,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    main()
